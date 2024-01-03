@@ -1,4 +1,4 @@
-describe("test validate zip code", () => {
+describe("validate zip code tests", () => {
 
   it("test for valid zip code", () => {
     const zipCode = "111 22";
