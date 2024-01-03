@@ -1,3 +1,3 @@
 # Testning & TypeScript
-## Kontankt Katalog
+## Kontakt Katalog
 VG Labb
