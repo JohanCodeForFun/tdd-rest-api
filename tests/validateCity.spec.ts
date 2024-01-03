@@ -1,3 +1,4 @@
+import { validateCity } from "../src/utils/validateCity";
 
 describe("validate city", () => {
 
