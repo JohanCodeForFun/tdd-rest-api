@@ -1,0 +1,4 @@
+export function validateCity(city: string): boolean {
+  const regex = /^[A-Za-z]+$/;
+  return regex.test(city);
+}
