@@ -1,8 +1,9 @@
+import { validateAddress } from "../src/utils/validateAddress";
 
 describe("validate address tests", () => {
 
   it("test for valid address", () => {
-    const address = { address: "Utvecklargatan 12" };
+    const address = "Utvecklargatan 12";
 
     const result = validateAddress(address);
 
@@ -10,9 +11,9 @@ describe("validate address tests", () => {
   });
 
   it("test for invalid address", () => {
-    const addressA = { address: "" }
-    const addressB = { address: "12" };
-    const addressC = { address: "12 Utvecklargatan" }
+    const addressA = "";
+    const addressB = "12";
+    const addressC = "12 Utvecklargatan"
 
     const resultA = validateAddress(addressA);
     const resultB = validateAddress(addressB);
