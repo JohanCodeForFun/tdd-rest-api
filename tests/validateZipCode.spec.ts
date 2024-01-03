@@ -1,3 +1,5 @@
+import { validateZipCode } from "../src/utils/validateZipCode";
+
 describe("validate zip code tests", () => {
 
   it("test for valid zip code", () => {
