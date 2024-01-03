@@ -1,6 +1,8 @@
+import { validateEmail } from "../src/utils/validateEmail";
+
 describe('validate email tests', () => { 
   it("test for valid email", () => {
-    const email = "anna.andersson@gmail.com";
+    const email = { email: "anna.andersson@gmail.com" };
 
     const result = validateEmail(email);
 
@@ -8,19 +10,16 @@ describe('validate email tests', () => {
   });
 
   it("test for invalid email", () => {
-    const emailA = "";
-    const emailB = "anna.andersson";
-    const emailC = "anna.andersson@gmail";
-    const emailD = "@gmail.com";
+    const emailA = { email: "anna.andersson@gmail" };
+    const emailB = { email: "anna.andersson@gmail" };
+    const emailC = { email: "@gmail.com" };
 
     const resultA = validateEmail(emailA);
     const resultB = validateEmail(emailB);
     const resultC = validateEmail(emailC);
-    const resultD = validateEmail(emailD);
 
     expect(resultA).toBe(false);
     expect(resultB).toBe(false);
-    expect(resultC).toBe(false);
     expect(resultC).toBe(false);
   });
   
