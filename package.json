@@ -17,6 +17,7 @@
     "ts-jest": "^29.1.1"
   },
   "dependencies": {
-    "@types/supertest": "^6.0.2"
+    "@types/supertest": "^6.0.2",
+    "validatorjs": "^3.22.1"
   }
 }
