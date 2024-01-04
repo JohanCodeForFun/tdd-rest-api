@@ -1,4 +1,4 @@
-import { validateEmail } from "../src/utils/validateEmail";
+import { validateEmail, rules } from "../src/utils/validateEmail";
 
 describe('validate email tests', () => { 
   it("test for valid email", () => {
@@ -11,16 +11,22 @@ describe('validate email tests', () => {
 
   it("test for invalid email", () => {
     const emailA = { email: "anna.andersson@gmail" };
-    const emailB = { email: "anna.andersson@gmail" };
-    const emailC = { email: "@gmail.com" };
+    const emailB = { email: "@gmail.com" };
+    const emailC = { email: "@gmail" };
 
-    const resultA = validateEmail(emailA);
-    const resultB = validateEmail(emailB);
-    const resultC = validateEmail(emailC);
+    expect(() => validateEmail(emailA)).toThrow('Invalid email');
+    expect(() => validateEmail(emailB)).toThrow('Invalid email');
+    expect(() => validateEmail(emailC)).toThrow('Invalid email');
+  });
 
-    expect(resultA).toBe(false);
-    expect(resultB).toBe(false);
-    expect(resultC).toBe(false);
+  it("test for empty email", () => {
+    const email = { email: "" };
+ 
+    expect(() => validateEmail(email)).toThrow('Invalid email');
+  });
+
+  it("email roules should exist", () => {
+    expect(rules).toHaveProperty('email', 'required|email');
   });
   
  })
