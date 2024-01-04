@@ -1,20 +1,15 @@
 import Validator from "validatorjs";
 
-let rules = {
+export let rules = {
   email: "required|email",
 };
 
 export function validateEmail(input: { email: string }): boolean {
   let emailValidation = new Validator(input, rules);
 
-  try {
-    if (emailValidation.passes()) {
-      return true;
-    } else {
-      return false;
-    }
-  } catch (error) {
-    console.error("Validation error:", error);
-    return false;
+  if (!emailValidation.passes()) {
+    throw new Error('Invalid email');
   }
+
+  return true;
 }
