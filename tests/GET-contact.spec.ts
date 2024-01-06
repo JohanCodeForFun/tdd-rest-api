@@ -16,10 +16,6 @@ afterAll(async () => {
   await mongoServer.stop();
 });
 
-describe("GET /contact", () => {
-  // Your tests go here
-});
-
 describe("GET contact", () => {
   it("should return 400 on invalid get", async () => {
     const res = await request(app).get("/contact/invalid-id");
