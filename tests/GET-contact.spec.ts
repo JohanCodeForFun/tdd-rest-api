@@ -23,9 +23,19 @@ describe("GET contact", () => {
   });
 
   it("should return 200 on valid get", async () => {
-    const getRes = await request(app).get(`/contact/${postRes.body._id}`);
+    const getRes = await request(app).get(`/contact/${body._id}`);
+    const validContact = {
+      firstname: "Anna",
+      lastname: "Andersson",
+      email: "anna.andersson@gmail.com",
+      personalnumber: "550713-1405",
+      address: "Utvecklargatan 12",
+      zipCode: "111 22",
+      city: "Stockholm",
+      country: "Sweden",
+    };
 
-    expect(getRes.body).toEqual(newContact);
+    expect(getRes.body).toEqual(validContact);
     expect(getRes.statusCode).toEqual(200);
   });
 
@@ -37,8 +47,18 @@ describe("GET contact", () => {
 
   it("should return contact with id", async () => {
     const getRes = await request(app).get(`/contact/${postRes.body._id}`);
+    const validContact = {
+      firstname: "Anna",
+      lastname: "Andersson",
+      email: "anna.andersson@gmail.com",
+      personalnumber: "550713-1405",
+      address: "Utvecklargatan 12",
+      zipCode: "111 22",
+      city: "Stockholm",
+      country: "Sweden",
+    };
 
     expect(getRes.statusCode).toEqual(200);
-    expect(getRes.body).toEqual(newContact);
+    expect(getRes.body).toEqual(validContact);
   });
 });
