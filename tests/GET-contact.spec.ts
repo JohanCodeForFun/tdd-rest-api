@@ -12,18 +12,18 @@ describe("GET contact", () => {
 
   it("should return 200 on valid get with id", async () => {
     const getRes = await request(app).get(`/contact/507f1f77bcf86cd799439011`);
-    // const validContact = {
-    //   firstname: "Anna",
-    //   lastname: "Andersson",
-    //   email: "anna.andersson@gmail.com",
-    //   personalnumber: "550713-1405",
-    //   address: "Utvecklargatan 12",
-    //   zipCode: "111 22",
-    //   city: "Stockholm",
-    //   country: "Sweden",
-    // };
+    const validContact = {
+      firstname: "Anna",
+      lastname: "Andersson",
+      email: "anna.andersson@gmail.com",
+      personalnumber: "550713-1405",
+      address: "Utvecklargatan 12",
+      zipCode: "111 22",
+      city: "Stockholm",
+      country: "Sweden",
+    };
 
-    // expect(getRes.body).toEqual(validContact);
+    expect(getRes.body).toEqual(validContact);
     expect(getRes.statusCode).toEqual(200);
   });
 
