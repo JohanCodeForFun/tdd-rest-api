@@ -27,3 +27,5 @@ const contactModel = mongoose.model("contact", contactSchema);
 export const createContact = async (contactData: Contact) => {
   return await new contactModel(contactData).save();
 };
+
+export const isValidId = (id: string) => mongoose.Types.ObjectId.isValid(id);
