@@ -1,4 +1,11 @@
 import express, { json } from "express";
+import { validateAddress } from "./utils/validateAddress";
+import { validateEmail } from "./utils/validateEmail";
+import { validateCity } from "./utils/validateCity";
+import { validateCountry } from "./utils/validateCountry";
+import { validateName } from "./utils/validateName";
+import { validateZipCode } from "./utils/validateZipCode";
+import { validatePersonalNumber } from "./utils/validatePersonalNumber";
 
 export const makeApp = () => {
   const app = express();
@@ -10,47 +17,53 @@ export const makeApp = () => {
   });
 
   app.post("/contact", async (req, res) => {
+    const {
+      firstname,
+      lastname,
+      email,
+      personalnumber,
+      address,
+      zipCode,
+      city,
+      country,
+    } = req.body;
+
     const errors = [];
-    /*
-      firstname: "Anna",
-      lastname: "Andersson",
-      email: "anna.andersson@gmail.com",
-      personalnumber: "550713-1405",
-      address: "Utvecklargatan 12",
-      zipCode: "111 22",
-      city: "Stockholm",
-      country: "Sweden",
-    */
+    
     if (!req.body) {
       errors.push({ error: "You must provide a complete contact" });
     }
 
-    if (!req.body.firstname || req.body.firstname.length === 0) {
+    if (!validateName(firstname)) {
+      console.log("Validate firstname:", firstname)
       errors.push({ error: "You must provide a firstname" });
     }
-    if (!req.body.lastname || req.body.lastname.length === 0) {
+    if (!validateName(lastname)) {
       errors.push({ error: "You must provide a lastname" });
     }
-    if (!req.body.email || req.body.email.length === 0) {
-      errors.push({ error: "You must provide a email" });
+    if (!validateEmail(email)) {
+      errors.push({ error: "You must provide a valid email. Example name@domain.com" });
     }
-    if (!req.body.address || req.body.address.length === 0) {
+    if (!validateAddress(address)) { 
       errors.push({ error: "You must provide a address" });
     }
-    if (!req.body.zipCode || req.body.zipCode.length === 0) {
+    if (!validateZipCode(zipCode)) {
       errors.push({ error: "You must provide a zipCode" });
     }
-    if (!req.body.city || req.body.city.length === 0) {
+    if (!validatePersonalNumber(personalnumber)) {
+      errors.push({ error: "You must provide a valid personal number. Example, 550713-1405" });
+    }
+    if (!validateCity(city)) {
       errors.push({ error: "You must provide a city" });
     }
-    if (!req.body.country || req.body.country.length === 0) {
+    if (!validateCountry(country)) {
       errors.push({ error: "You must provide a country" });
     }
     if (errors.length) {
       res.status(400).json(errors);
     } else {
       res.status(201).json({ message: "contact created" });
-      // try { 
+      // try {
       //   const contact = req.body;
       //   // const contact = new Contact(req.body);
       //   // await contact.save();
