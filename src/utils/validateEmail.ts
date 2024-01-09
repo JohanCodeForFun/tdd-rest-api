@@ -1,15 +1,17 @@
-import Validator from "validatorjs";
+// import Validator from "validatorjs";
 
-export let rules = {
-  email: "required|email",
-};
+// export let rules = {
+//   email: "required|email",
+// };
 
-export function validateEmail(input: { email: string }): boolean {
-  let emailValidation = new Validator(input, rules);
+export function validateEmail(email: string): boolean {
+  // let emailValidation = new Validator(input, rules);
 
-  if (!emailValidation.passes()) {
-    throw new Error('Invalid email');
-  }
+  // if (!emailValidation.passes()) {
+  //   throw new Error('Invalid email');
+  // }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const isValidEmail = emailRegex.test(email);
 
-  return true;
+  return isValidEmail;
 }
