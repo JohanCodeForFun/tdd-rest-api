@@ -1,3 +1,17 @@
+POST http://localhost:3000/contact/
+Content-type: application/json
+{
+    "firstname": "Bella",
+    "lastname": "Andersson",
+    "email": "bella.andersson@gmail.com",
+    "personalnumber": "950713-1405",
+    "address": "Utvecklargatan 99",
+    "zipCode": "111 22",
+    "city": "Stockholm",
+    "country": "Sweden",
+}
+
+### 
 POST http://localhost:3000/contact/invalid-id
 Content-type: application/json
 {
