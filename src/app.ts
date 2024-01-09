@@ -9,7 +9,7 @@ import { validatePersonalNumber } from "./utils/validatePersonalNumber";
 import { Contact, createContact } from "./database";
 
 type AppPropps = {
-  createContact: (contactData: Contact) => Contact;
+  createContact: (contactData: Contact) => Promise<Contact>;
 };
 
 export const makeApp = ({ createContact }: AppPropps) => {
