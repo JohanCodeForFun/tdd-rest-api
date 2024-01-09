@@ -2,10 +2,11 @@
   "name": "vg-labb",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/server.ts",
   "scripts": {
     "test": "jest",
-    "test:watch": "jest --watchAll"
+    "test:watch": "jest --watchAll",
+    "dev": "nodemon"
   },
   "keywords": [],
   "author": "",
