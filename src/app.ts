@@ -6,14 +6,32 @@ import { validateCountry } from "./utils/validateCountry";
 import { validateName } from "./utils/validateName";
 import { validateZipCode } from "./utils/validateZipCode";
 import { validatePersonalNumber } from "./utils/validatePersonalNumber";
-import { Contact, createContact } from "./database";
+import {
+  Contact,
+  createContact,
+  getContactById,
+  getAllContacts,
+  isValidId,
+} from "./database";
+
+type GeoCodingLocation = {
+  latitude: number;
+  longtitude: number;
+}
 
 type AppPropps = {
   createContact: (contactData: Contact) => Promise<Contact>;
+  getContactById: (id: string) => Promise<Contact | null>;
+  getAllContacts: () => Promise<Contact[]>;
+  // getGeoCodingLocation: (location: string) => Promise<GeoCodingLocation[]>;
 };
 
-export const makeApp = ({ createContact }: AppPropps) => {
-  const app = express();
+export const makeApp = ({
+  createContact,
+  getContactById,
+  getAllContacts,
+}: AppPropps) => {
+  const app = express(); 
 
   app.use(json());
 
@@ -33,54 +51,52 @@ export const makeApp = ({ createContact }: AppPropps) => {
       country,
     } = req.body;
 
-    const errors = [];
+    const errors: object[] = [];
 
-    if (!req.body) {
-      errors.push({ error: "You must provide a complete contact" });
-    }
+    const validations = [
+      { validate: validateName, field: 'firstname', message: 'You must provide a firstname' },
+      { validate: validateName, field: 'lastname', message: 'You must provide a lastname' },
+      { validate: validateEmail, field: 'email', message: 'You must provide a valid email. Example name@domain.com' },
+      { validate: validateAddress, field: 'address', message: 'You must provide a address' },
+      { validate: validateZipCode, field: 'zipCode', message: 'You must provide a zipCode' },
+      { validate: validatePersonalNumber, field: 'personalnumber', message: 'You must provide a valid personal number. Example, 550713-1405' },
+      { validate: validateCity, field: 'city', message: 'You must provide a city' },
+      { validate: validateCountry, field: 'country', message: 'You must provide a country' },
+    ];
 
-    if (!validateName(firstname)) {
-      errors.push({ error: "You must provide a firstname" });
-    }
-    if (!validateName(lastname)) {
-      errors.push({ error: "You must provide a lastname" });
-    }
-    if (!validateEmail(email)) {
-      errors.push({
-        error: "You must provide a valid email. Example name@domain.com",
-      });
-    }
-    if (!validateAddress(address)) {
-      errors.push({ error: "You must provide a address" });
-    }
-    if (!validateZipCode(zipCode)) {
-      errors.push({ error: "You must provide a zipCode" });
-    }
-    if (!validatePersonalNumber(personalnumber)) {
-      errors.push({
-        error: "You must provide a valid personal number. Example, 550713-1405",
-      });
-    }
-    if (!validateCity(city)) {
-      errors.push({ error: "You must provide a city" });
-    }
-    if (!validateCountry(country)) {
-      errors.push({ error: "You must provide a country" });
-    }
+    validations.forEach(({ validate, field, message }) => {
+      if (!validate(req.body[field])) {
+        errors.push({ error: message });
+      }
+    });
+
     if (errors.length) {
       res.status(400).json(errors);
     } else {
       try {
         const contact = await createContact(req.body);
-
         res.status(201).json(contact);
       } catch (error) {
-        console.log("catch error", error)
-        res
-          .status(500)
-          .json({ error: "An error occurred while saving the contact" });
+        console.log("catch error", error);
+        res.status(500).json({ error: "An error occurred while saving the contact" });
       }
     }
   });
-  return app; 
+
+  app.get("/contact/:id", async (req, res) => {
+    if (!isValidId(req.params.id)) {
+      res.status(400).send();
+    } else {
+      const result = await getContactById(req.params.id);
+
+      res.status(200).send(result);
+    }
+  });
+
+  app.get("/contact/", async (req, res) => {
+    const contacts = await getAllContacts();
+    
+    res.status(200).json(contacts);
+  });
+  return app;
 };
