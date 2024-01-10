@@ -22,10 +22,18 @@ const contactSchema = new mongoose.Schema<Contact>({
   country: String,
 });
 
-const contactModel = mongoose.model("contact", contactSchema);
+const ContactModel = mongoose.model("contact", contactSchema);
 
 export const createContact = async (contactData: Contact) => {
-  return await new contactModel(contactData).save();
+  return await new ContactModel(contactData).save();
 };
+
+export const getContactById = async (id: string) => {
+  return await ContactModel.findById(id);
+}
+
+export const getAllContacts = async () => {
+  return await ContactModel.find({});
+}
 
 export const isValidId = (id: string) => mongoose.Types.ObjectId.isValid(id);
