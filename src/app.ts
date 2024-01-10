@@ -1,11 +1,4 @@
 import express, { json } from "express";
-import { validateAddress } from "./utils/validateAddress";
-import { validateEmail } from "./utils/validateEmail";
-import { validateCity } from "./utils/validateCity";
-import { validateCountry } from "./utils/validateCountry";
-import { validateName } from "./utils/validateName";
-import { validateZipCode } from "./utils/validateZipCode";
-import { validatePersonalNumber } from "./utils/validatePersonalNumber";
 import {
   Contact,
   createContact,
@@ -13,6 +6,16 @@ import {
   getAllContacts,
   isValidId,
 } from "./database";
+ 
+import {
+  validateAddress,
+  validateEmail,
+  validateCity,
+  validateCountry,
+  validateName,
+  validateZipCode,
+  validatePersonalNumber,
+} from './utils/index';
 
 type GeoCodingLocation = {
   latitude: number;
