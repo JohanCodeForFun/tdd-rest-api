@@ -1,12 +1,11 @@
 import { default as request } from "supertest";
 import { makeApp } from "../src/app";
-import mongoose from "mongoose";
-import { MongoMemoryServer } from "mongodb-memory-server";
 
 const createContact = jest.fn();
+const getContactById = jest.fn();
+const getAllContacts = jest.fn();
 
-// let mongoServer: MongoMemoryServer;
-const app = makeApp({ createContact });
+const app = makeApp({ createContact, getContactById, getAllContacts });
 
 const error = [
   {
@@ -18,7 +17,6 @@ const error = [
 ];
 
 beforeEach(() => {
-  // createContact.mockRestore();
   createContact.mockResolvedValue({
     firstname: "Anna",
     lastname: "Andersson",
@@ -30,17 +28,6 @@ beforeEach(() => {
     country: "Sweden",
   });
 });
-
-// beforeAll(async () => {
-//   mongoServer = new MongoMemoryServer();
-//   const mongoUri = await mongoServer.getUri();
-//   await mongoose.connect(mongoUri);
-// });
-
-// afterAll(async () => {
-//   await mongoose.disconnect();
-//   await mongoServer.stop();
-// });
 
 describe("POST /contact", () => {
   it("should return 400 on empty contact", async () => {
