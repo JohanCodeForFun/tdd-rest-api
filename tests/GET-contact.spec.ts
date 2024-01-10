@@ -1,18 +1,31 @@
 import request from "supertest";
 import { makeApp } from "../src/app";
-import { createContact } from "../src/database";
 
-const app = makeApp({ createContact });
+const createContact = jest.fn();
+const getContactById = jest.fn();
+const getAllContacts = jest.fn();
 
-describe("GET contact", () => {
-  it("should return 400 on invalid get", async () => {
-    const res = await request(app).get("/contact/invalid-id");
-    expect(res.statusCode).toEqual(400);
+const app = makeApp({ createContact, getContactById, getAllContacts });
+
+beforeEach(() => {
+  getContactById.mockRestore();
+  getAllContacts.mockRestore();
+
+  getContactById.mockResolvedValue({
+    id: "638cfd06f84b41a7be61ebad",
+    firstname: "Anna",
+    lastname: "Andersson",
+    email: "anna.andersson@gmail.com",
+    personalnumber: "550713-1405",
+    address: "Utvecklargatan 12",
+    zipCode: "111 22",
+    city: "Stockholm",
+    country: "Sweden",
   });
 
-  it("should return 200 on valid get with id", async () => {
-    const getRes = await request(app).get(`/contact/507f1f77bcf86cd799439011`);
-    const validContact = {
+  getAllContacts.mockResolvedValue([
+    {
+      id: "638cfd06f84b41a7be61ebad",
       firstname: "Anna",
       lastname: "Andersson",
       email: "anna.andersson@gmail.com",
@@ -21,16 +34,43 @@ describe("GET contact", () => {
       zipCode: "111 22",
       city: "Stockholm",
       country: "Sweden",
-    };
+      lat: 59.3251172,
+      lng: 18.0710935,
+    },
+    {
+      id: "638cfd06f84b41a7be61eadb",
+      firstname: "Erik",
+      lastname: "Eriksson",
+      email: "erik.eriksson@gmail.com",
+      personalnumber: "740301-1405",
+      address: "Utvecklargatan 12",
+      zipCode: "111 22",
+      city: "Stockholm",
+      country: "Sweden",
+      lat: 59.3251172,
+      lng: 18.0710935,
+    },
+  ]);
+});
 
-    expect(getRes.body).toEqual(validContact);
+describe("GET contact", () => {
+  it("should return 400 on invalid get", async () => {
+    const res = await request(app).get("/contact/invalid-id");
+
+    expect(res.statusCode).toEqual(400);
+  });
+
+  it("should return 200 on valid get with id", async () => {
+    const getRes = await request(app).get(`/contact/638cfd06f84b41a7be61ebad`);
+
+    expect(getRes.body.id).toBe("638cfd06f84b41a7be61ebad");
     expect(getRes.statusCode).toEqual(200);
   });
 
   it("should return all contacts", async () => {
     const res = await request(app).get("/contact");
-    expect(res.statusCode).toEqual(200);
-    expect(res.body).toBeInstanceOf(Array);
-  });
 
+    expect(res.body).toBeInstanceOf(Array);
+    expect(res.statusCode).toEqual(200);
+  });
 });
