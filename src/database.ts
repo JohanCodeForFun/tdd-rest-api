@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 
 export type Contact = {
   firstname: string;
@@ -22,18 +22,18 @@ const contactSchema = new mongoose.Schema<Contact>({
   country: String,
 });
 
-const ContactModel = mongoose.model("contact", contactSchema);
+const ContactModel = mongoose.model("Contact", contactSchema);
 
 export const createContact = async (contactData: Contact) => {
   return await new ContactModel(contactData).save();
 };
 
 export const getContactById = async (id: string) => {
-  return await ContactModel.findById(id);
+  return await ContactModel.findById(id).lean();
 }
 
 export const getAllContacts = async () => {
-  return await ContactModel.find({});
+  return await ContactModel.find().lean();
 }
 
 export const isValidId = (id: string) => mongoose.Types.ObjectId.isValid(id);
