@@ -1,35 +1,43 @@
-import nock from 'nock';
-import { getGeoCodingLocation } from '../src/geoLocation';
+import nock from "nock";
+import { getGeoCodingLocation } from "../src/geoLocation";
 
-describe('getGeoCodingLocation', () => {
-  it('returns geolocation data for a city', async () => {
-    const city = 'Stockholm';
-    const mockData = [
-      {
-        name: "Stockholm",
-        latitude: 59.3251172,
-        longitude: 18.0710935,
-        country: "SE",
-      }
-    ];
+beforeAll(() => {
+  const mockData = {
+    name: "Stockholm",
+    latitude: 59.3251172,
+    longitude: 18.0710935,
+    country: "SE",
+  };
 
-    nock("https://api.api-ninjas.com")
-      .get(`/v1/geocoding?city=${city}`)
-      .reply(200, mockData);
+  nock("https://api.api-ninjas.com")
+    .get("/v1/geocoding?city=Stockholm")
+    .times(2)
+    .reply(200, mockData);
+});
+
+describe("getGeoCodingLocation", () => {
+  it("returns geolocation data for a city", async () => {
+    const city = "Stockholm";
+    const mockData = {
+      name: "Stockholm",
+      latitude: 59.3251172,
+      longitude: 18.0710935,
+      country: "SE",
+    };
 
     const data = await getGeoCodingLocation(city);
+
+    console.log(city, data)
 
     expect(data).toEqual(mockData);
   });
 
-  it('returns an empty array when the request fails', async () => {
-    const city = 'Stockholm';
-
-    nock("https://api.api-ninjas.com")
-      .get(`/v1/geocoding?city=${city}`)
-      .replyWithError('Something went wrong');
+  it("returns an empty array when the request fails", async () => {
+    const city = "99999";
 
     const data = await getGeoCodingLocation(city);
+
+    console.log(city, data)
 
     expect(data).toEqual([]);
   });
