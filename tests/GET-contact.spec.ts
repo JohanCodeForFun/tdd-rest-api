@@ -1,11 +1,28 @@
 import request from "supertest";
+import nock from "nock";
 import { makeApp } from "../src/app";
 
 const createContact = jest.fn();
 const getContactById = jest.fn();
 const getAllContacts = jest.fn();
 
-const app = makeApp({ createContact, getContactById, getAllContacts });
+const app = makeApp({
+  createContact,
+  getContactById,
+  getAllContacts,
+});
+
+beforeAll(() => {
+  nock("https://api.api-ninjas.com")
+    .get("/v1/geocoding?city=Stockholm")
+    .times(5)
+    .reply(200, {
+      name: "Stockholm",
+      latitude: 59.3251172,
+      longitude: 18.0710935,
+      country: "SE",
+    });
+});
 
 beforeEach(() => {
   getContactById.mockRestore();
@@ -21,6 +38,8 @@ beforeEach(() => {
     zipCode: "111 22",
     city: "Stockholm",
     country: "Sweden",
+    lat: 59.3251172,
+    lng: 18.0710935,
   });
 
   getAllContacts.mockResolvedValue([
@@ -53,6 +72,10 @@ beforeEach(() => {
   ]);
 });
 
+afterEach(() => {
+  jest.resetAllMocks();
+});
+
 describe("GET contact", () => {
   it("should return 400 on invalid get", async () => {
     const res = await request(app).get("/contact/invalid-id");
@@ -63,6 +86,8 @@ describe("GET contact", () => {
   it("should return 200 on valid get with id", async () => {
     const getRes = await request(app).get(`/contact/638cfd06f84b41a7be61ebad`);
 
+    console.log("in should return 200 on valid id", getRes.body);
+
     expect(getRes.body.id).toBe("638cfd06f84b41a7be61ebad");
     expect(getRes.statusCode).toEqual(200);
   });
@@ -71,6 +96,14 @@ describe("GET contact", () => {
     const res = await request(app).get("/contact");
 
     expect(res.body).toBeInstanceOf(Array);
+    expect(res.statusCode).toEqual(200);
+  });
+
+  it("should mock api request to get geolocation", async () => {
+    const res = await request(app).get("/contact");
+
+    expect(res.body[0].lat).toEqual(59.3251172);
+    expect(res.body[0].lng).toEqual(18.0710935);
     expect(res.statusCode).toEqual(200);
   });
 });
