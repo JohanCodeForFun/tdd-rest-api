@@ -7,15 +7,6 @@ const getAllContacts = jest.fn();
 
 const app = makeApp({ createContact, getContactById, getAllContacts });
 
-const error = [
-  {
-    error: "firstname is missing",
-  },
-  {
-    error: "email is not valid",
-  },
-];
-
 beforeEach(() => {
   createContact.mockResolvedValue({
     firstname: "Anna",
@@ -34,6 +25,29 @@ describe("POST /contact", () => {
     const res = await request(app).post("/contact").send({});
 
     expect(res.statusCode).toEqual(400);
+  });
+
+  it("should return error message when createContact throws an error", async () => {
+    const errorContact = {
+      firstname: "Anna",
+      lastname: "Andersson",
+      email: "anna.andersson@example.com",
+      personalnumber: "550713-1405",
+      address: "Utvecklargatan 12",
+      zipCode: "111 22",
+      city: "Stockholm",
+      country: "Sweden",
+    };
+
+    // Mock createContact to throw an error
+    (createContact as jest.Mock).mockImplementation(() => {
+      throw new Error('An error occurred while saving the contact');
+    });
+
+    const res = await request(app).post("/contact").send(errorContact);
+
+    expect(res.statusCode).toEqual(500);
+    expect(res.body).toEqual({ error: 'An error occurred while saving the contact' });
   });
 
   it("should return error message on missing first name", async () => {
@@ -86,7 +100,7 @@ describe("POST /contact", () => {
     expect(res.statusCode).toEqual(201);
   });
 
-  it("should call createContact 1 time", () => {
-    expect(createContact.mock.calls.length).toBe(1);
+  it("should call createContact 2 times", () => {
+    expect(createContact.mock.calls.length).toBe(2);
   })
 });
