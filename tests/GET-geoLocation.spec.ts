@@ -27,8 +27,6 @@ describe("getGeoCodingLocation", () => {
 
     const data = await getGeoCodingLocation(city);
 
-    console.log(city, data)
-
     expect(data).toEqual(mockData);
   });
 
@@ -36,8 +34,6 @@ describe("getGeoCodingLocation", () => {
     const city = "99999";
 
     const data = await getGeoCodingLocation(city);
-
-    console.log(city, data)
 
     expect(data).toEqual([]);
   });
