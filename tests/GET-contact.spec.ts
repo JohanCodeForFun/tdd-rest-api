@@ -5,6 +5,7 @@ import { makeApp } from "../src/app";
 const createContact = jest.fn();
 const getContactById = jest.fn();
 const getAllContacts = jest.fn();
+const getGeoCodingLocation = jest.fn();
 
 const app = makeApp({
   createContact,
@@ -15,7 +16,7 @@ const app = makeApp({
 beforeAll(() => {
   nock("https://api.api-ninjas.com")
     .get("/v1/geocoding?city=Stockholm")
-    .times(5)
+    .times(8)
     .reply(200, {
       name: "Stockholm",
       latitude: 59.3251172,
@@ -81,6 +82,32 @@ describe("GET contact", () => {
     const res = await request(app).get("/contact/invalid-id");
 
     expect(res.statusCode).toEqual(400);
+  });
+
+  it('returns the contact with geolocation when city is present', async () => {
+    const mockContact = {
+      _id: "638cfd06f84b41a7be61ebad",
+      firstname: "Anna",
+      lastname: "Andersson",
+      email: "anna.andersson@gmail.com",
+      personalnumber: "550713-1405",
+      address: "Utvecklargatan 12",
+      zipCode: "111 22",
+      city: "Stockholm",
+      country: "Sweden",
+    };
+    const mockGeoLocation = [{ latitude: 99, longitude: 99 }];
+    getContactById.mockResolvedValue(mockContact);
+    (getGeoCodingLocation).mockResolvedValue(mockGeoLocation);
+
+    const response = await request(app).get(`/contact/${mockContact._id}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      ...mockContact,
+      lat: mockGeoLocation[0].latitude,
+      lng: mockGeoLocation[0].longitude,
+    });
   });
 
   it("should return 200 on valid get with id", async () => {
