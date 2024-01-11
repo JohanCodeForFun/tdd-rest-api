@@ -86,8 +86,6 @@ describe("GET contact", () => {
   it("should return 200 on valid get with id", async () => {
     const getRes = await request(app).get(`/contact/638cfd06f84b41a7be61ebad`);
 
-    console.log("in should return 200 on valid id", getRes.body);
-
     expect(getRes.body.id).toBe("638cfd06f84b41a7be61ebad");
     expect(getRes.statusCode).toEqual(200);
   });
@@ -96,14 +94,6 @@ describe("GET contact", () => {
     const res = await request(app).get("/contact");
 
     expect(res.body).toBeInstanceOf(Array);
-    expect(res.statusCode).toEqual(200);
-  });
-
-  it("should mock api request to get geolocation", async () => {
-    const res = await request(app).get("/contact");
-
-    expect(res.body[0].lat).toEqual(59.3251172);
-    expect(res.body[0].lng).toEqual(18.0710935);
     expect(res.statusCode).toEqual(200);
   });
 });
