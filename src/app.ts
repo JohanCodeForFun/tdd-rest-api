@@ -1,12 +1,7 @@
 import express, { json } from "express";
-import {
-  Contact,
-  createContact,
-  getContactById,
-  getAllContacts,
-  isValidId,
-} from "./database";
- 
+import { Contact, isValidId } from "./database";
+import { getGeoCodingLocation } from "./geoLocation";
+
 import {
   validateAddress,
   validateEmail,
@@ -15,18 +10,12 @@ import {
   validateName,
   validateZipCode,
   validatePersonalNumber,
-} from './utils/index';
-
-type GeoCodingLocation = {
-  latitude: number;
-  longtitude: number;
-}
+} from "./utils/index";
 
 type AppPropps = {
   createContact: (contactData: Contact) => Promise<Contact>;
   getContactById: (id: string) => Promise<Contact | null>;
   getAllContacts: () => Promise<Contact[]>;
-  // getGeoCodingLocation: (location: string) => Promise<GeoCodingLocation[]>;
 };
 
 export const makeApp = ({
@@ -34,7 +23,7 @@ export const makeApp = ({
   getContactById,
   getAllContacts,
 }: AppPropps) => {
-  const app = express(); 
+  const app = express();
 
   app.use(json());
 
@@ -43,28 +32,50 @@ export const makeApp = ({
   });
 
   app.post("/contact", async (req, res) => {
-    const {
-      firstname,
-      lastname,
-      email,
-      personalnumber,
-      address,
-      zipCode,
-      city,
-      country,
-    } = req.body;
-
     const errors: object[] = [];
 
     const validations = [
-      { validate: validateName, field: 'firstname', message: 'You must provide a firstname' },
-      { validate: validateName, field: 'lastname', message: 'You must provide a lastname' },
-      { validate: validateEmail, field: 'email', message: 'You must provide a valid email. Example name@domain.com' },
-      { validate: validateAddress, field: 'address', message: 'You must provide a address' },
-      { validate: validateZipCode, field: 'zipCode', message: 'You must provide a zipCode' },
-      { validate: validatePersonalNumber, field: 'personalnumber', message: 'You must provide a valid personal number. Example, 550713-1405' },
-      { validate: validateCity, field: 'city', message: 'You must provide a city' },
-      { validate: validateCountry, field: 'country', message: 'You must provide a country' },
+      {
+        validate: validateName,
+        field: "firstname",
+        message: "You must provide a firstname",
+      },
+      {
+        validate: validateName,
+        field: "lastname",
+        message: "You must provide a lastname",
+      },
+      {
+        validate: validateEmail,
+        field: "email",
+        message: "You must provide a valid email. Example name@domain.com",
+      },
+      {
+        validate: validateAddress,
+        field: "address",
+        message: "You must provide a address",
+      },
+      {
+        validate: validateZipCode,
+        field: "zipCode",
+        message: "You must provide a zipCode",
+      },
+      {
+        validate: validatePersonalNumber,
+        field: "personalnumber",
+        message:
+          "You must provide a valid personal number. Example, 550713-1405",
+      },
+      {
+        validate: validateCity,
+        field: "city",
+        message: "You must provide a city",
+      },
+      {
+        validate: validateCountry,
+        field: "country",
+        message: "You must provide a country",
+      },
     ];
 
     validations.forEach(({ validate, field, message }) => {
@@ -81,7 +92,9 @@ export const makeApp = ({
         res.status(201).json(contact);
       } catch (error) {
         console.log("catch error", error);
-        res.status(500).json({ error: "An error occurred while saving the contact" });
+        res
+          .status(500)
+          .json({ error: "An error occurred while saving the contact" });
       }
     }
   });
@@ -90,15 +103,49 @@ export const makeApp = ({
     if (!isValidId(req.params.id)) {
       res.status(400).send();
     } else {
-      const result = await getContactById(req.params.id);
+      let result = await getContactById(req.params.id);
 
-      res.status(200).send(result);
+      if (result?.city) {
+        const geoLocation = await getGeoCodingLocation(result.city);
+        if (geoLocation && geoLocation.length > 0) {
+          console.log(geoLocation);
+          res.status(200).send({
+            // ...result,
+            // utan _doc så får vi inte med lat och lng
+            // i svars objektet utan kommer utanför.
+
+            ...result._doc,
+            lat: geoLocation[0]?.latitude,
+            lng: geoLocation[0]?.longitude,
+          });
+        } else {
+          res.status(200).send({
+            // ...result._doc,
+            ...result._doc,
+            lat: 99.0,
+            lng: 99.0,
+          });
+        }
+      } else {
+        res.status(200).send(result?._doc);
+      }
     }
   });
 
-  app.get("/contact/", async (req, res) => {
-    const contacts = await getAllContacts();
-    
+  app.get("/contact", async (req, res) => {
+    let contacts = await getAllContacts();
+
+    contacts = await Promise.all(
+      contacts.map(async (contact) => {
+        const geoLocation = await getGeoCodingLocation(contact.city);
+        return {
+          ...contact._doc,
+          lat: geoLocation[0]?.latitude,
+          lng: geoLocation[0]?.longitude,
+        };
+      })
+    );
+
     res.status(200).json(contacts);
   });
   return app;
