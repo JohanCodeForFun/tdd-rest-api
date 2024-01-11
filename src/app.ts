@@ -10,7 +10,7 @@ import {
   validateName,
   validateZipCode,
   validatePersonalNumber,
-} from "./utils/index";
+} from "./utils/index"; 
 
 type AppPropps = {
   createContact: (contactData: Contact) => Promise<Contact>;
@@ -108,26 +108,20 @@ export const makeApp = ({
       if (result?.city) {
         const geoLocation = await getGeoCodingLocation(result.city);
         if (geoLocation && geoLocation.length > 0) {
-          console.log(geoLocation);
           res.status(200).send({
-            // ...result,
-            // utan _doc så får vi inte med lat och lng
-            // i svars objektet utan kommer utanför.
-
-            ...result._doc,
+            ...result,
             lat: geoLocation[0]?.latitude,
             lng: geoLocation[0]?.longitude,
           });
         } else {
           res.status(200).send({
-            // ...result._doc,
-            ...result._doc,
+            ...result,
             lat: 99.0,
             lng: 99.0,
           });
         }
       } else {
-        res.status(200).send(result?._doc);
+        res.status(200).send(result);
       }
     }
   });
@@ -139,13 +133,12 @@ export const makeApp = ({
       contacts.map(async (contact) => {
         const geoLocation = await getGeoCodingLocation(contact.city);
         return {
-          ...contact._doc,
+          ...contact,
           lat: geoLocation[0]?.latitude,
           lng: geoLocation[0]?.longitude,
         };
       })
     );
-
     res.status(200).json(contacts);
   });
   return app;
