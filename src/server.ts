@@ -15,9 +15,11 @@ if (!mongoUri) {
   throw new Error("MONGO_URI is not defined");
 }
 
-mongoose.connect(mongoUri).then(() => {
+const server = mongoose.connect(mongoUri).then(() => {
   app.listen(port, () => {
     console.log("Connected to database.");
     console.log("Listening on port", port);
   });
 });
+
+export { server };
