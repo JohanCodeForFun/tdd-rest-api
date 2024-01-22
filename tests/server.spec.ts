@@ -1,60 +1,56 @@
+import { makeApp } from "../src/app";
+import { createContact, getContactById, getAllContacts } from "../src/database";
 import mongoose from "mongoose";
+import { server } from "../src/server";
 
-// Mock mongoose
 jest.mock("mongoose", () => ({
-  connect: jest.fn().mockResolvedValue({}),
-  Schema: jest.fn().mockImplementation(() => ({
-    // Mock mongoose.Schema
-    add: jest.fn(),
-    index: jest.fn(),
-  })),
+  connect: jest.fn().mockResolvedValue(undefined),
 }));
 
-describe("server.ts tests", () => {
-  beforeEach(() => {
-    jest.resetModules(); // This resets the module registry in Jest, allowing for a fresh import of server.ts in each test
+jest.mock("../src/app", () => ({
+  makeApp: jest.fn().mockReturnValue({
+    listen: jest.fn(),
+  }),
+}));
+
+jest.mock("../src/database", () => ({
+  createContact: jest.fn(),
+  getContactById: jest.fn(),
+  getAllContacts: jest.fn(),
+}));
+
+describe("Server", () => {
+  // Save the original MONGO_URI
+  const originalMongoUri = process.env.MONGO_URI;
+
+  // ...
+
+  afterEach(() => {
+    // Restore the original MONGO_URI
+    process.env.MONGO_URI = originalMongoUri;
   });
 
-  it("throws an error when MONGO_URI is not defined", () => {
-    process.env.MONGO_URI = "";
-    expect(() => require("../src/server")).toThrow("MONGO_URI is not defined");
+  it("should throw an error when MONGO_URI is not defined", () => {
+    // Delete MONGO_URI from the environment variables
+    delete process.env.MONGO_URI;
+
+    // Require the server module and check that it throws an error
+    jest.isolateModules(() => {
+      expect(() => require("../src/server")).toThrow(
+        "MONGO_URI is not defined"
+      );
+    });
   });
 
-  it("connects to the database when MONGO_URI is defined", async () => {
-    process.env.MONGO_URI = "mongodb://localhost:27017/test";
+  it("should start the server successfully", () => {
     require("../src/server");
+
     expect(mongoose.connect).toHaveBeenCalledWith(process.env.MONGO_URI);
   });
+
+  it("should throw an error when MONGO_URI is not defined", () => {
+    delete process.env.MONGO_URI;
+
+    expect(() => require("../src/server")).toThrow("MONGO_URI is not defined");
+  });
 });
-
-// jest.mock('mongoose', () => ({
-//   connect: jest.fn(),
-// }));
-
-// jest.mock('../src/app', () => {
-//   return () => ({
-//     listen: jest.fn().mockImplementation((port, callback) => {
-//       callback();
-//     }),
-//   });
-// });
-
-// describe('server.ts tests', () => {
-//   beforeEach(() => {
-//     jest.resetModules(); // This resets the module registry in Jest, allowing for a fresh import of server.ts in each test
-//   });
-
-//   it('throws an error when MONGO_URI is not defined', () => {
-//     process.env.MONGO_URI = '';
-//     expect(() => require('../src/server')).toThrow('MONGO_URI is not defined');
-//   });
-
-//   it('connects to the database and starts the server when MONGO_URI is defined', () => {
-//     process.env.MONGO_URI = 'mongodb://localhost:27017/test';
-//     require('../src/server');
-//     const mongoose = require('mongoose');
-//     const makeApp = require('../src/app');
-//     expect(mongoose.connect).toHaveBeenCalledWith(process.env.MONGO_URI);
-//     expect(makeApp).toHaveBeenCalled();
-//   });
-// });
