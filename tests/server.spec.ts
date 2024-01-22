@@ -1,56 +1,21 @@
-import { makeApp } from "../src/app";
-import { createContact, getContactById, getAllContacts } from "../src/database";
-import mongoose from "mongoose";
-import { server } from "../src/server";
+import { startServer } from '../src/server';
+import mongoose from 'mongoose';
 
-jest.mock("mongoose", () => ({
+jest.mock('mongoose', () => ({
   connect: jest.fn().mockResolvedValue(undefined),
 }));
 
-jest.mock("../src/app", () => ({
-  makeApp: jest.fn().mockReturnValue({
-    listen: jest.fn(),
-  }),
-}));
-
-jest.mock("../src/database", () => ({
-  createContact: jest.fn(),
-  getContactById: jest.fn(),
-  getAllContacts: jest.fn(),
-}));
-
-describe("Server", () => {
-  // Save the original MONGO_URI
-  const originalMongoUri = process.env.MONGO_URI;
-
-  // ...
-
-  afterEach(() => {
-    // Restore the original MONGO_URI
-    process.env.MONGO_URI = originalMongoUri;
+describe('startServer', () => {
+  it('should throw an error when mongoUri is not defined', async () => {
+    await expect(startServer(undefined, 3000)).rejects.toThrow('MONGO_URI is not defined');
   });
 
-  it("should throw an error when MONGO_URI is not defined", () => {
-    // Delete MONGO_URI from the environment variables
-    delete process.env.MONGO_URI;
+  it('should start the server successfully when mongoUri is defined', async () => {
+    const mongoUri = 'mongodb://localhost:27017/test';
+    const port = 3000;
 
-    // Require the server module and check that it throws an error
-    jest.isolateModules(() => {
-      expect(() => require("../src/server")).toThrow(
-        "MONGO_URI is not defined"
-      );
-    });
-  });
+    await startServer(mongoUri, port);
 
-  it("should start the server successfully", () => {
-    require("../src/server");
-
-    expect(mongoose.connect).toHaveBeenCalledWith(process.env.MONGO_URI);
-  });
-
-  it("should throw an error when MONGO_URI is not defined", () => {
-    delete process.env.MONGO_URI;
-
-    expect(() => require("../src/server")).toThrow("MONGO_URI is not defined");
+    expect(mongoose.connect).toHaveBeenCalledWith(mongoUri, expect.any(Object));
   });
 });
