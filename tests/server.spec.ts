@@ -1,21 +1,48 @@
-import { startServer } from '../src/server';
-import mongoose from 'mongoose';
+import { startServer } from "../src/server";
+const dummyLogger = { error: () => {} };
 
-jest.mock('mongoose', () => ({
-  connect: jest.fn().mockResolvedValue(undefined),
-}));
-
-describe('startServer', () => {
-  it('should throw an error when mongoUri is not defined', async () => {
-    await expect(startServer(undefined, 3000)).rejects.toThrow('MONGO_URI is not defined');
+describe("startServer", () => {
+  afterEach(() => {
+    delete process.env.PORT;
   });
 
-  it('should start the server successfully when mongoUri is defined', async () => {
-    const mongoUri = 'mongodb://localhost:27017/test';
-    const port = 3000;
+  it("should listen on default port", () => {
+    const listen = jest.fn();
+    const app = {
+      listen,
+    };
 
-    await startServer(mongoUri, port);
+    startServer(app, dummyLogger);
 
-    expect(mongoose.connect).toHaveBeenCalledWith(mongoUri, expect.any(Object));
+    expect(listen).toHaveBeenCalledWith(3000);
+  });
+
+  it("should listen on port defined by PORT env", () => {
+    process.env.PORT = "1234";
+    const listen = jest.fn();
+    const app = {
+      listen,
+    };
+
+    startServer(app, dummyLogger);
+
+    expect(listen).toHaveBeenCalledWith(1234);
+  });
+
+  it('should log error if thrown', () => {
+    const error = new Error('test');
+    const listen = jest.fn(() => {
+      throw error;
+    });
+    const app = {
+      listen,
+    };
+    const logger = {
+      error: jest.fn(),
+    };
+
+    startServer(app, logger);
+
+    expect(logger.error).toHaveBeenCalledWith('Error starting server:', error.message);
   });
 });

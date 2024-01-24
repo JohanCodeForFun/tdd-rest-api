@@ -17,12 +17,12 @@ beforeAll(() => {
   nock("https://api.api-ninjas.com")
     .get("/v1/geocoding?city=Stockholm")
     .times(8)
-    .reply(200, {
+    .reply(200, [{
       name: "Stockholm",
       latitude: 59.3251172,
       longitude: 18.0710935,
       country: "SE",
-    });
+    }]);
 });
 
 beforeEach(() => {
@@ -84,6 +84,14 @@ describe("GET contact", () => {
     expect(res.statusCode).toEqual(400);
   });
 
+  it("should return 404 on valid get with invalid id", async () => {
+    getContactById.mockResolvedValue(null);
+    
+    const getRes = await request(app).get(`/contact/000000000000000000000000`);
+
+    expect(getRes.statusCode).toEqual(404);
+  });
+
   it('returns the contact with geolocation when city is present', async () => {
     const mockContact = {
       _id: "638cfd06f84b41a7be61ebad",
@@ -96,7 +104,7 @@ describe("GET contact", () => {
       city: "Stockholm",
       country: "Sweden",
     };
-    const mockGeoLocation = [{ latitude: 99, longitude: 99 }];
+    const mockGeoLocation = [{ latitude: 59.3251172, longitude: 18.0710935 }];
     getContactById.mockResolvedValue(mockContact);
     (getGeoCodingLocation).mockResolvedValue(mockGeoLocation);
 
