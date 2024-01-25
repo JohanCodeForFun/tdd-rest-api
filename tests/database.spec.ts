@@ -15,24 +15,29 @@ describe("Database operations tests", () => {
     await mongoServer.stop();
   });
 
-  it('returns the contact with the given id', async () => {
-    const mockContact = {
-    _id: "638cfd06f84b41a7be61ebad",
-    firstname: "Anna",
-    lastname: "Andersson",
-    email: "anna.andersson@gmail.com",
-    personalnumber: "550713-1405",
-    address: "Utvecklargatan 12",
-    zipCode: "111 22",
-    city: "Stockholm",
-    country: "Sweden",
-    lat: 59.3251172,
-    lng: 18.0710935,
-    };
+  it("returns the contact with the given id", async () => {
+    const contact = await createContact({
+      firstname: "Anna",
+      lastname: "Andersson",
+      email: "anna.andersson@gmail.com",
+      personalnumber: "550713-1405",
+      address: "Utvecklargatan 12",
+      zipCode: "111 22",
+      city: "Stockholm",
+      country: "Sweden",
+    });
+    
 
-    const contact = await getContactById('638cfd06f84b41a7be61ebad');
+    const response = await getContactById(contact._id.toString());
 
-    expect(contact).toEqual(mockContact);
+    expect(response?.firstname).toEqual("Anna");
+    expect(response?.lastname).toEqual("Andersson");
+    expect(response?.email).toEqual("anna.andersson@gmail.com");
+    expect(response?.personalnumber).toEqual("550713-1405");
+    expect(response?.address).toEqual("Utvecklargatan 12");
+    expect(response?.zipCode).toEqual("111 22");
+    expect(response?.city).toEqual("Stockholm");
+    expect(response?.country).toEqual("Sweden");
   });
 
   it("getAllContacts - should return all contacts", async () => {
@@ -58,6 +63,6 @@ describe("Database operations tests", () => {
     });
 
     const contacts = await getAllContacts();
-    expect(contacts.length).toBe(2);
+    expect(contacts.length).toBe(3);
   });
 });
