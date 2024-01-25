@@ -1,25 +1,12 @@
-require("dotenv").config();
-import { makeApp } from "./app";
-import { createContact, getContactById, getAllContacts } from "./database";
-import mongoose from "mongoose";
+const startServer = async (app: any, logger: any) => {
+  try {
+    const port = Number(process.env.PORT) || 3000;
+    const server = app.listen(port);
 
-const port = 3000;
-const app = makeApp({
-  createContact,
-  getContactById,
-  getAllContacts,
-});
+    return server;
+  } catch (error) {
+      logger.error("Error starting server:", (error as Error).message);
+  }
+};
 
-const mongoUri = process.env.MONGO_URI;
-if (!mongoUri) {
-  throw new Error("MONGO_URI is not defined");
-}
-
-const server = mongoose.connect(mongoUri).then(() => {
-  app.listen(port, () => {
-    console.log("Connected to database.");
-    console.log("Listening on port", port);
-  });
-});
-
-export { server };
+export { startServer };
