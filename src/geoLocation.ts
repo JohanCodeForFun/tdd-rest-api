@@ -16,7 +16,6 @@ export const getGeoCodingLocation = async (city: string): Promise<GeoCodingLocat
 
     return data;
   } catch (err) {
-    console.error(err);
     return [];
   }
 };
