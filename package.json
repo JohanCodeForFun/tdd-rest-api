@@ -2,9 +2,9 @@
   "name": "vg-labb",
   "version": "1.0.0",
   "description": "",
-  "main": "src/server.ts",
+  "main": "./index.ts",
   "scripts": {
-    "test": "jest",
+    "test": "jest /tests/database.spec.ts --watch",
     "test:watch": "jest --watchAll",
     "dev": "nodemon"
   },
