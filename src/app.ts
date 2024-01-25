@@ -1,6 +1,7 @@
 import express, { json } from "express";
-import { Contact, isValidId } from "./database";
+import { isValidId } from "./database";
 import { getGeoCodingLocation } from "./geoLocation";
+import { Contact } from "./types/Contact";
 
 import {
   validateAddress,
@@ -10,9 +11,9 @@ import {
   validateName,
   validateZipCode,
   validatePersonalNumber,
-} from "./utils/index"; 
+} from "./utils/index";
 
-type AppPropps = {
+export type AppPropps = {
   createContact: (contactData: Contact) => Promise<Contact>;
   getContactById: (id: string) => Promise<Contact | null>;
   getAllContacts: () => Promise<Contact[]>;
@@ -88,10 +89,9 @@ export const makeApp = ({
       res.status(400).json(errors);
     } else {
       try {
-        const contact = await createContact(req.body);
-        res.status(201).json(contact);
+        await createContact(req.body);
+        res.status(201).json("No Content");
       } catch (error) {
-        console.log("catch error", error);
         res
           .status(500)
           .json({ error: "An error occurred while saving the contact" });
@@ -101,27 +101,22 @@ export const makeApp = ({
 
   app.get("/contact/:id", async (req, res) => {
     if (!isValidId(req.params.id)) {
-      res.status(400).send();
+      res.status(400).send("Invalid id received");
     } else {
       let result = await getContactById(req.params.id);
-
       if (result?.city) {
         const geoLocation = await getGeoCodingLocation(result.city);
         if (geoLocation && geoLocation.length > 0) {
           res.status(200).send({
             ...result,
-            lat: geoLocation[0]?.latitude,
-            lng: geoLocation[0]?.longitude,
+            lat: geoLocation[0].latitude,
+            lng: geoLocation[0].longitude,
           });
         } else {
-          res.status(200).send({
-            ...result,
-            lat: 99.0,
-            lng: 99.0,
-          });
+          res.status(200).send(result);
         }
       } else {
-        res.status(200).send(result);
+        res.status(404).send(result);
       }
     }
   });
@@ -132,11 +127,16 @@ export const makeApp = ({
     contacts = await Promise.all(
       contacts.map(async (contact) => {
         const geoLocation = await getGeoCodingLocation(contact.city);
-        return {
-          ...contact,
-          lat: geoLocation[0]?.latitude,
-          lng: geoLocation[0]?.longitude,
-        };
+
+        if (geoLocation && geoLocation.length > 0) {
+          return {
+            ...contact,
+            lat: geoLocation[0].latitude,
+            lng: geoLocation[0].longitude,
+          };
+        } else {
+          return contact;
+        }
       })
     );
     res.status(200).json(contacts);
