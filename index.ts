@@ -10,7 +10,7 @@ const app = makeApp({
   getContactById,
   getAllContacts,
 });
-
+ 
 (async () => {
   await mongoose.connect(mongoUri);
   await startServer(app, console);
