@@ -1,15 +1,5 @@
-import mongoose, { Document } from "mongoose";
-
-export type Contact = {
-  firstname: string;
-  lastname: string;
-  email: string;
-  personalnumber: string;
-  address: string;
-  zipCode: string;
-  city: string;
-  country: string;
-};
+import mongoose from "mongoose";
+import { Contact } from "./types/Contact";
 
 const contactSchema = new mongoose.Schema<Contact>({
   firstname: String,
@@ -22,7 +12,7 @@ const contactSchema = new mongoose.Schema<Contact>({
   country: String,
 });
 
-const ContactModel = mongoose.model("Contact", contactSchema);
+export const ContactModel = mongoose.model("Contact", contactSchema);
 
 export const createContact = async (contactData: Contact) => {
   return await new ContactModel(contactData).save();
