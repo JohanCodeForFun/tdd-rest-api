@@ -10,6 +10,10 @@ describe("Database operations tests", () => {
     await mongoose.connect(mongoServer.getUri());
   });
 
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   afterAll(async () => {
     await mongoose.connection.close();
     await mongoServer.stop();
@@ -26,7 +30,6 @@ describe("Database operations tests", () => {
       city: "Stockholm",
       country: "Sweden",
     });
-    
 
     const response = await getContactById(contact._id.toString());
 
@@ -65,4 +68,5 @@ describe("Database operations tests", () => {
     const contacts = await getAllContacts();
     expect(contacts.length).toBe(3);
   });
+
 });
