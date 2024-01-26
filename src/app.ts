@@ -106,6 +106,7 @@ export const makeApp = ({
       let result = await getContactById(req.params.id);
       if (result?.city) {
         const geoLocation = await getGeoCodingLocation(result.city);
+        
         if (geoLocation && geoLocation.length > 0) {
           res.status(200).send({
             ...result,
@@ -128,9 +129,7 @@ export const makeApp = ({
       contacts.map(async (contact) => {
         const geoLocation = await getGeoCodingLocation(contact.city);
 
-        console.log("geoLocation before if", geoLocation)
         if (geoLocation && geoLocation.length > 0) {
-          console.log("if geo >", contact)
           return {
             ...contact,
             lat: geoLocation[0].latitude,
