@@ -93,7 +93,7 @@ export const makeApp = ({
         res.status(201).json("No Content");
       } catch (error) {
         res
-          .status(500)
+          .status(400)
           .json({ error: "An error occurred while saving the contact" });
       }
     }
@@ -128,7 +128,9 @@ export const makeApp = ({
       contacts.map(async (contact) => {
         const geoLocation = await getGeoCodingLocation(contact.city);
 
+        console.log("geoLocation before if", geoLocation)
         if (geoLocation && geoLocation.length > 0) {
+          console.log("if geo >", contact)
           return {
             ...contact,
             lat: geoLocation[0].latitude,
