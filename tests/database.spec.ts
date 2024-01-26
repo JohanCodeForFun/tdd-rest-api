@@ -1,5 +1,6 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
+import nock from "nock";
 import { createContact, getContactById, getAllContacts } from "../src/database";
 
 describe("Database operations tests", () => {
@@ -11,7 +12,14 @@ describe("Database operations tests", () => {
   });
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    nock("https://api.api-ninjas.com")
+    .get("/v1/geocoding?city=DFFFDFDSSD")
+    .reply(200, []);
+  });
+
+  afterEach(() => {
+    jest.resetAllMocks();
+    nock.cleanAll();
   });
 
   afterAll(async () => {
@@ -21,52 +29,48 @@ describe("Database operations tests", () => {
 
   it("returns the contact with the given id", async () => {
     const contact = await createContact({
-      firstname: "Anna",
+      firstname: "Lisa",
       lastname: "Andersson",
-      email: "anna.andersson@gmail.com",
+      email: "lisa.andersson@gmail.com",
       personalnumber: "550713-1405",
       address: "Utvecklargatan 12",
       zipCode: "111 22",
-      city: "Stockholm",
+      city: "DFFFDFDSSD",
       country: "Sweden",
     });
 
     const response = await getContactById(contact._id.toString());
 
-    expect(response?.firstname).toEqual("Anna");
+    expect(response?.firstname).toEqual("Lisa");
     expect(response?.lastname).toEqual("Andersson");
-    expect(response?.email).toEqual("anna.andersson@gmail.com");
-    expect(response?.personalnumber).toEqual("550713-1405");
-    expect(response?.address).toEqual("Utvecklargatan 12");
-    expect(response?.zipCode).toEqual("111 22");
-    expect(response?.city).toEqual("Stockholm");
-    expect(response?.country).toEqual("Sweden");
+    expect(response?.city).toBe("DFFFDFDSSD");
+    expect(response?.lat).toBe(undefined);
+    expect(response?.lng).toBe(undefined);
   });
 
-  it("getAllContacts - should return all contacts", async () => {
-    const contact1 = await createContact({
-      firstname: "Anna",
+  it('it should return contact without lat/long if address is invalid', async () => {
+
+    const contact = await createContact({
+      firstname: "David",
       lastname: "Andersson",
-      email: "anna.andersson@gmail.com",
+      email: "david.andersson@gmail.com",
       personalnumber: "550713-1405",
       address: "Utvecklargatan 12",
       zipCode: "111 22",
-      city: "Stockholm",
-      country: "Sweden",
-    });
-    const contact2 = await createContact({
-      firstname: "Erik",
-      lastname: "Eriksson",
-      email: "erik.eriksson@gmail.com",
-      personalnumber: "740301-1405",
-      address: "Utvecklargatan 12",
-      zipCode: "111 22",
-      city: "Stockholm",
-      country: "Sweden",
+      city: "DFFFDFDSSD",
+      country: "DFFFDFDSSD",
     });
 
-    const contacts = await getAllContacts();
-    expect(contacts.length).toBe(3);
+    const response = await getContactById(contact._id.toString());
+
+    expect(response?.city).toBe("DFFFDFDSSD");
+    expect(response?.lat).toBe(undefined);
+    expect(response?.lng).toBe(undefined);
   });
 
+  it("getAllContacts - should return all contacts", async () => {
+    const contacts = await getAllContacts();
+    
+    expect(contacts.length).toBe(2);
+  });
 });
