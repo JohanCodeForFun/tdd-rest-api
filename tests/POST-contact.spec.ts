@@ -46,7 +46,7 @@ describe("POST /contact", () => {
 
     const res = await request(app).post("/contact").send(errorContact);
 
-    expect(res.statusCode).toEqual(500);
+    expect(res.statusCode).toEqual(400);
     expect(res.body).toEqual({ error: 'An error occurred while saving the contact' });
   });
 
