@@ -13,27 +13,15 @@ const app = makeApp({
   getAllContacts,
 });
 
-beforeAll(() => {
-  nock("https://api.api-ninjas.com")
-    .get("/v1/geocoding?city=Stockholm")
-    .times(8)
-    .reply(200, [{
-      name: "Stockholm",
-      latitude: 59.3251172,
-      longitude: 18.0710935,
-      country: "SE",
-    }]);
-});
-
 beforeEach(() => {
   getContactById.mockRestore();
   getAllContacts.mockRestore();
 
   getContactById.mockResolvedValue({
     id: "638cfd06f84b41a7be61ebad",
-    firstname: "Anna",
+    firstname: "Stina",
     lastname: "Andersson",
-    email: "anna.andersson@gmail.com",
+    email: "stina.andersson@gmail.com",
     personalnumber: "550713-1405",
     address: "Utvecklargatan 12",
     zipCode: "111 22",
@@ -75,6 +63,7 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.resetAllMocks();
+  nock.cleanAll();
 });
 
 describe("GET contact", () => {
@@ -92,21 +81,54 @@ describe("GET contact", () => {
     expect(getRes.statusCode).toEqual(404);
   });
 
-  it('returns the contact with geolocation when city is present', async () => {
+  it('returns the contact without geolocation when invalid city', async () => {
+    const mockGeoLocation: any[] = [];
+    
+    nock("https://api.api-ninjas.com")
+    .get("/v1/geocoding?city=Stockholm")
+    .times(1)
+    .reply(400, mockGeoLocation);
+  
     const mockContact = {
       _id: "638cfd06f84b41a7be61ebad",
-      firstname: "Anna",
+      firstname: "Zara",
       lastname: "Andersson",
-      email: "anna.andersson@gmail.com",
+      email: "zara.andersson@gmail.com",
       personalnumber: "550713-1405",
       address: "Utvecklargatan 12",
       zipCode: "111 22",
       city: "Stockholm",
       country: "Sweden",
     };
-    const mockGeoLocation = [{ latitude: 59.3251172, longitude: 18.0710935 }];
     getContactById.mockResolvedValue(mockContact);
-    (getGeoCodingLocation).mockResolvedValue(mockGeoLocation);
+    getGeoCodingLocation.mockResolvedValue(mockGeoLocation);
+
+    const response = await request(app).get(`/contact/${mockContact._id}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockContact);
+  });
+
+  it('returns the contact with geolocation when valid city is present', async () => {
+    const mockGeoLocation = [{ latitude: 59.3251172, longitude: 18.0710935 }];
+    
+    nock("https://api.api-ninjas.com")
+    .get("/v1/geocoding?city=Stockholm")
+    .reply(200, mockGeoLocation);
+  
+    const mockContact = {
+      _id: "638cfd06f84b41a7be61ebad",
+      firstname: "Zara",
+      lastname: "Andersson",
+      email: "zara.andersson@gmail.com",
+      personalnumber: "550713-1405",
+      address: "Utvecklargatan 12",
+      zipCode: "111 22",
+      city: "Stockholm",
+      country: "Sweden",
+    };
+    getContactById.mockResolvedValue(mockContact);
+    getGeoCodingLocation.mockResolvedValue(mockGeoLocation);
 
     const response = await request(app).get(`/contact/${mockContact._id}`);
 
@@ -119,16 +141,30 @@ describe("GET contact", () => {
   });
 
   it("should return 200 on valid get with id", async () => {
+    const mockGeoLocation = [{ latitude: 59.3251172, longitude: 18.0710935 }];
+    
+    nock("https://api.api-ninjas.com")
+      .get("/v1/geocoding?city=Stockholm")
+      .reply(200, mockGeoLocation);
+    
     const getRes = await request(app).get(`/contact/638cfd06f84b41a7be61ebad`);
 
     expect(getRes.body.id).toBe("638cfd06f84b41a7be61ebad");
     expect(getRes.statusCode).toEqual(200);
   });
 
-  it("should return all contacts", async () => {
+  it("should return all contacts with geolocation", async () => {
+    const mockGeoLocation = [{ latitude: 59.3251172, longitude: 18.0710935 }];
+    
+    nock("https://api.api-ninjas.com")
+      .get("/v1/geocoding?city=Stockholm")
+      .reply(200, mockGeoLocation);
+
     const res = await request(app).get("/contact");
 
     expect(res.body).toBeInstanceOf(Array);
+    expect(res.body[0].lat).toBe(mockGeoLocation[0].latitude);
+    expect(res.body[0].lng).toBe(mockGeoLocation[0].longitude);
     expect(res.statusCode).toEqual(200);
   });
 });
