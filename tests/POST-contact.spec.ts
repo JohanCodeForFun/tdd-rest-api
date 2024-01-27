@@ -9,12 +9,12 @@ const app = makeApp({ createContact, getContactById, getAllContacts });
 
 beforeEach(() => {
   createContact.mockResolvedValue({
-    firstname: "Anna",
-    lastname: "Andersson",
+    first_name: "Anna",
+    last_name: "Andersson",
     email: "anna.andersson@gmail.com",
-    personalnumber: "550713-1405",
+    personal_number: "550713-1405",
     address: "Utvecklargatan 12",
-    zipCode: "111 22",
+    zipcode: "111 22",
     city: "Stockholm",
     country: "Sweden",
   });
@@ -29,12 +29,12 @@ describe("POST /contact", () => {
 
   it("should return error message when createContact throws an error", async () => {
     const errorContact = {
-      firstname: "Anna",
-      lastname: "Andersson",
+      first_name: "Anna",
+      last_name: "Andersson",
       email: "anna.andersson@example.com",
-      personalnumber: "550713-1405",
+      personal_number: "550713-1405",
       address: "Utvecklargatan 12",
-      zipCode: "111 22",
+      zipcode: "111 22",
       city: "Stockholm",
       country: "Sweden",
     };
@@ -51,29 +51,29 @@ describe("POST /contact", () => {
   });
 
   it("should return error message on missing first name", async () => {
-    const missingFirstName = {
-      lastname: "Andersson",
+    const missingfirst_name = {
+      last_name: "Andersson",
       email: "anna.andersson@gmail.com",
-      personalnumber: "550713-1405",
+      personal_number: "550713-1405",
       address: "Utvecklargatan 12",
-      zipCode: "111 22",
+      zipcode: "111 22",
       city: "Stockholm",
       country: "Sweden",
     };
 
-    const res = await request(app).post("/contact").send(missingFirstName);
+    const res = await request(app).post("/contact").send(missingfirst_name);
 
     expect(res.statusCode).toEqual(400);
   });
 
   it("should return error message on invalid email", async () => {
     const invalidEmailContact = {
-      firstname: "Anna",
-      lastname: "Andersson",
+      first_name: "Anna",
+      last_name: "Andersson",
       email: "anna.andersson",
-      personalnumber: "550713-1405",
+      personal_number: "550713-1405",
       address: "Utvecklargatan 12",
-      zipCode: "111 22",
+      zipcode: "111 22",
       city: "Stockholm",
       country: "Sweden",
     };
@@ -85,12 +85,12 @@ describe("POST /contact", () => {
 
   it("should return 201 on valid post", async () => {
     const validContact = {
-      firstname: "Anna",
-      lastname: "Andersson",
+      first_name: "Anna",
+      last_name: "Andersson",
       email: "anna.andersson@gmail.com",
-      personalnumber: "550713-1405",
+      personal_number: "550713-1405",
       address: "Utvecklargatan 12",
-      zipCode: "111 22",
+      zipcode: "111 22",
       city: "Stockholm",
       country: "Sweden",
     };

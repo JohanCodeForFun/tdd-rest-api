@@ -29,20 +29,20 @@ describe("Database operations tests", () => {
 
   it("returns the contact with the given id", async () => {
     const contact = await createContact({
-      firstname: "Lisa",
-      lastname: "Andersson",
+      first_name: "Lisa",
+      last_name: "Andersson",
       email: "lisa.andersson@gmail.com",
-      personalnumber: "550713-1405",
+      personal_number: "550713-1405",
       address: "Utvecklargatan 12",
-      zipCode: "111 22",
+      zipcode: "111 22",
       city: "DFFFDFDSSD",
       country: "Sweden",
     });
 
     const response = await getContactById(contact._id.toString());
 
-    expect(response?.firstname).toEqual("Lisa");
-    expect(response?.lastname).toEqual("Andersson");
+    expect(response?.first_name).toEqual("Lisa");
+    expect(response?.last_name).toEqual("Andersson");
     expect(response?.city).toBe("DFFFDFDSSD");
     expect(response?.lat).toBe(undefined);
     expect(response?.lng).toBe(undefined);
@@ -51,12 +51,12 @@ describe("Database operations tests", () => {
   it('it should return contact without lat/long if address is invalid', async () => {
 
     const contact = await createContact({
-      firstname: "David",
-      lastname: "Andersson",
+      first_name: "David",
+      last_name: "Andersson",
       email: "david.andersson@gmail.com",
-      personalnumber: "550713-1405",
+      personal_number: "550713-1405",
       address: "Utvecklargatan 12",
-      zipCode: "111 22",
+      zipcode: "111 22",
       city: "DFFFDFDSSD",
       country: "DFFFDFDSSD",
     });

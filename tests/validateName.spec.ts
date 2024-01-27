@@ -2,39 +2,39 @@ import { validateName } from "../src/utils/validateName";
 
 describe('validate name', () => { 
 
-  it("valid firstname", () => {
-    const firstName = "Anna";
+  it("valid first_name", () => {
+    const first_name = "Anna";
 
-    const result = validateName(firstName);
-
-    expect(result).toBe(true);
-  });
-
-  it("valid lastname", () => {
-    const lastName = "Andersson";
-
-    const result = validateName(lastName);
+    const result = validateName(first_name);
 
     expect(result).toBe(true);
   });
 
-  it("invalid firstname", () => {
-    const firstNameA = "";
-    const firstNameB = "Ann44";
+  it("valid last_name", () => {
+    const last_name = "Andersson";
 
-    const resultA = validateName(firstNameA);
-    const resultB = validateName(firstNameB);
+    const result = validateName(last_name);
+
+    expect(result).toBe(true);
+  });
+
+  it("invalid first_name", () => {
+    const first_nameA = "";
+    const first_nameB = "Ann44";
+
+    const resultA = validateName(first_nameA);
+    const resultB = validateName(first_nameB);
 
     expect(resultA).toBe(false);
     expect(resultB).toBe(false);
   });
   
-  it("invalid lastname", () => {
-    const lastNameA = "";
-    const lastNameB = "%&/&##%";
+  it("invalid last_name", () => {
+    const last_nameA = "";
+    const last_nameB = "%&/&##%";
 
-    const resultA = validateName(lastNameA);
-    const resultB = validateName(lastNameB);
+    const resultA = validateName(last_nameA);
+    const resultB = validateName(last_nameB);
 
     expect(resultA).toBe(false);
     expect(resultB).toBe(false);
