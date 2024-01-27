@@ -1,6 +1,6 @@
-export function validateZipCode(zipCode: string): boolean {
-  if (!zipCode || zipCode === "") return false;
+export function validateZipCode(zipcode: string): boolean {
+  if (!zipcode || zipcode === "") return false;
 
   const regex = /^\d{3} \d{2}$/;
-  return regex.test(zipCode);
+  return regex.test(zipcode);
 }

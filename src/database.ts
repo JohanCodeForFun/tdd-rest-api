@@ -2,12 +2,12 @@ import mongoose from "mongoose";
 import { Contact } from "./types/Contact";
 
 const contactSchema = new mongoose.Schema<Contact>({
-  firstname: String,
-  lastname: String,
+  first_name: String,
+  last_name: String,
   email: String,
-  personalnumber: String,
+  personal_number: String,
   address: String,
-  zipCode: String,
+  zipcode: String,
   city: String,
   country: String,
 });

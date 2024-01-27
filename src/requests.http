@@ -1,12 +1,12 @@
 POST http://localhost:3000/contact/
 Content-type: application/json
 {
-    "firstname": "Bella",
-    "lastname": "Andersson",
+    "first_name": "Bella",
+    "last_name": "Andersson",
     "email": "bella.andersson@gmail.com",
-    "personalnumber": "950713-1405",
+    "personal_number": "950713-1405",
     "address": "Utvecklargatan 99",
-    "zipCode": "111 22",
+    "zipcode": "111 22",
     "city": "Stockholm",
     "country": "Sweden",
 }
@@ -15,12 +15,12 @@ Content-type: application/json
 POST http://localhost:3000/contact/invalid-id
 Content-type: application/json
 {
-    "firstname": "Bella",
-    "lastname": "Andersson",
+    "first_name": "Bella",
+    "last_name": "Andersson",
     "email": "bella.andersson@gmail.com",
-    "personalnumber": "950713-1405",
+    "personal_number": "950713-1405",
     "address": "Utvecklargatan 99",
-    "zipCode": "111 22",
+    "zipcode": "111 22",
     "city": "Stockholm",
     "country": "Sweden",
 }

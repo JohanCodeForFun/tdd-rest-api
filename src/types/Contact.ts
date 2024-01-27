@@ -1,10 +1,10 @@
 export type Contact = {
-  firstname: string;
-  lastname: string;
+  first_name: string;
+  last_name: string;
   email: string;
-  personalnumber: string;
+  personal_number: string;
   address: string;
-  zipCode: string;
+  zipcode: string;
   city: string;
   country: string;
   lat?: number;

@@ -38,13 +38,13 @@ export const makeApp = ({
     const validations = [
       {
         validate: validateName,
-        field: "firstname",
-        message: "You must provide a firstname",
+        field: "first_name",
+        message: "You must provide a first_name",
       },
       {
         validate: validateName,
-        field: "lastname",
-        message: "You must provide a lastname",
+        field: "last_name",
+        message: "You must provide a last_name",
       },
       {
         validate: validateEmail,
@@ -58,12 +58,12 @@ export const makeApp = ({
       },
       {
         validate: validateZipCode,
-        field: "zipCode",
-        message: "You must provide a zipCode",
+        field: "zipcode",
+        message: "You must provide a zipcode",
       },
       {
         validate: validatePersonalNumber,
-        field: "personalnumber",
+        field: "personal_number",
         message:
           "You must provide a valid personal number. Example, 550713-1405",
       },
