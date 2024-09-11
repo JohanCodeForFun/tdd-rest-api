@@ -2,7 +2,7 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  "collectCoverage": true,
+  // "collectCoverage": true,
   collectCoverageFrom: [
     './src/**',
     '!**/node_modules/**',
