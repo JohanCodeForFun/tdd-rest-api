@@ -4,7 +4,8 @@
   "description": "",
   "main": "./index.ts",
   "scripts": {
-    "test": "jest /tests/database.spec.ts --watch",
+    "test": "jest",
+    "test:db": "jest /tests/database.spec.ts",
     "test:watch": "jest --watchAll",
     "dev": "nodemon"
   },
