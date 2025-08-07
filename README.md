@@ -28,4 +28,4 @@ Run the application with:
 - npm install
 - npm run dev, for server start
 - npm run test:watch, for all tests with coverage report
-- add credentials for .env file (needs database connection string not provided)
+- add credentials for .env file (needs database connection string, not provided)
